@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Üyelik ve Giriş Formu</title>
+    <!-- Tailwind CSS CDN'i -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+        #animation-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+        .form-container {
+            max-width: 500px;
+            width: 100%;
+            z-index: 10;
+            position: relative;
+        }
+        .submit-button {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .submit-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        #game-controls {
+            z-index: 11;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        .game-info {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            right: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            font-size: 1.25rem;
+            color: #4a5568;
+            z-index: 20;
+        }
+        .game-info span {
+            background-color: rgba(255, 255, 255, 0.7);
+            padding: 0.5rem 1rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        #end-game-modal {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 100;
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 3rem;
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+        #exit-button {
+            background-color: rgba(255, 255, 255, 0.7);
+            padding: 0.5rem 1rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        #exit-button:hover {
+            background-color: rgba(255, 255, 255, 0.9);
+        }
+    </style>
+</head>
+<body>
+    <!-- Animasyon bölümü artık başlangıçta görünür -->
+    <div id="game-section" class="absolute top-0 left-0 w-full h-full">
+        <canvas id="animation-canvas"></canvas>
+    </div>
+    
+    <!-- Oyun Bilgileri -->
+    <div class="game-info hidden" id="game-stats">
+        <div class="flex gap-4">
+            <span id="score-display">Skor: 0</span>
+            <span id="level-display">Seviye: 1</span>
+            <span id="lives-display">Can: 3</span>
+        </div>
+        <button id="exit-button" class="text-red-500 font-bold">Çıkış</button>
+    </div>
+
+    <div id="form-section" class="form-container bg-white p-8 rounded-2xl shadow-2xl">
+        <!-- Üyelik Formu Bölümü -->
+        <div id="membership-section">
+            <h1 class="text-3xl font-bold text-center mb-6 text-gray-800">Üyelik Formu</h1>
+            <p class="text-center text-gray-600 mb-8">Lütfen bilgilerinizi eksiksiz doldurunuz.</p>
+    
+            <form id="membership-form" class="space-y-6">
+                <div>
+                    <label for="name" class="block text-sm font-medium text-gray-700">Adınız</label>
+                    <input type="text" id="name" name="name" required
+                           class="mt-1 block w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl shadow-sm focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none transition-all duration-300">
+                </div>
+                
+                <div>
+                    <label for="surname" class="block text-sm font-medium text-gray-700">Soyadınız</label>
+                    <input type="text" id="surname" name="surname" required
+                           class="mt-1 block w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl shadow-sm focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none transition-all duration-300">
+                </div>
+    
+                <div>
+                    <label for="idNumber" class="block text-sm font-medium text-gray-700">Kimlik Numarası</label>
+                    <input type="text" id="idNumber" name="idNumber" required pattern="[0-9]{11}"
+                           title="Kimlik numarası 11 rakamdan oluşmalıdır."
+                           class="mt-1 block w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl shadow-sm focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none transition-all duration-300">
+                </div>
+                
+                <div>
+                    <label for="phone" class="block text-sm font-medium text-gray-700">Telefon Numarası</label>
+                    <input type="tel" id="phone" name="phone" required
+                           title="Telefon numarası 10 rakamdan oluşmalıdır."
+                           class="mt-1 block w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl shadow-sm focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none transition-all duration-300">
+                </div>
+    
+                <button type="submit"
+                        class="submit-button w-full flex justify-center py-3 px-4 border border-transparent rounded-full shadow-sm text-sm font-semibold text-white bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    Gönder
+                </button>
+            </form>
+
+            <p class="text-center text-gray-600 mt-4">Zaten üye misin? <a href="#" id="show-login" class="text-indigo-600 font-semibold hover:underline">Giriş Yap</a></p>
+        </div>
+
+        <!-- Giriş Formu Bölümü -->
+        <div id="login-section" class="hidden">
+            <h1 class="text-3xl font-bold text-center mb-6 text-gray-800">Giriş Yap</h1>
+            <p class="text-center text-gray-600 mb-8">Hesabınıza giriş yapmak için bilgilerinizi giriniz.</p>
+
+            <form id="login-form" class="space-y-6">
+                <div>
+                    <label for="login-email" class="block text-sm font-medium text-gray-700">E-posta Adresi</label>
+                    <input type="email" id="login-email" name="email" required
+                           class="mt-1 block w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl shadow-sm focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none transition-all duration-300">
+                </div>
+                
+                <div>
+                    <label for="login-password" class="block text-sm font-medium text-gray-700">Şifre</label>
+                    <input type="password" id="login-password" name="password" required
+                           class="mt-1 block w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl shadow-sm focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none transition-all duration-300">
+                </div>
+    
+                <button type="submit"
+                        class="submit-button w-full flex justify-center py-3 px-4 border border-transparent rounded-full shadow-sm text-sm font-semibold text-white bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    Giriş Yap
+                </button>
+            </form>
+
+            <p class="text-center text-gray-600 mt-4">Hesabın yok mu? <a href="#" id="show-signup" class="text-indigo-600 font-semibold hover:underline">Üye Ol</a></p>
+        </div>
+
+        <div id="message-container" class="mt-4 text-center text-sm font-medium"></div>
+    </div>
+    
+    <div id="game-controls" class="hidden">
+        <h2 id="question" class="text-4xl font-bold text-gray-800 mb-4"></h2>
+        <p id="game-message" class="text-lg font-medium text-gray-600"></p>
+        <p id="timer-display" class="text-xl font-semibold text-red-500 mt-4 hidden">Süre: 0</p>
+    </div>
+
+    <!-- Oyun Bitti Mesajı -->
+    <div id="end-game-modal" class="hidden">
+        <h2 class="text-4xl font-bold mb-4 text-gray-800">Oyun Bitti!</h2>
+        <p id="final-score" class="text-xl mb-6 text-gray-700"></p>
+        <button id="restart-button" class="submit-button w-full flex justify-center py-3 px-4 border border-transparent rounded-full shadow-sm text-sm font-semibold text-white bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+            Tekrar Oyna
+        </button>
+    </div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // HTML elemanlarını seçme
+            const membershipForm = document.getElementById('membership-form');
+            const loginForm = document.getElementById('login-form');
+            const membershipSection = document.getElementById('membership-section');
+            const loginSection = document.getElementById('login-section');
+            const showLoginBtn = document.getElementById('show-login');
+            const showSignupBtn = document.getElementById('show-signup');
+            const messageContainer = document.getElementById('message-container');
+            const formSection = document.getElementById('form-section');
+            const gameControls = document.getElementById('game-controls');
+            const questionElement = document.getElementById('question');
+            const gameMessageElement = document.getElementById('game-message');
+            const gameStats = document.getElementById('game-stats');
+            const scoreDisplay = document.getElementById('score-display');
+            const levelDisplay = document.getElementById('level-display');
+            const livesDisplay = document.getElementById('lives-display');
+            const endGameModal = document.getElementById('end-game-modal');
+            const finalScoreElement = document.getElementById('final-score');
+            const restartButton = document.getElementById('restart-button');
+            const exitButton = document.getElementById('exit-button');
+            const timerDisplay = document.getElementById('timer-display');
+
+            // Oyun değişkenleri
+            let particles = [];
+            let score = 0;
+            let level = 1;
+            let lives = 3;
+            let gameSpeed = 1;
+            let player = null;
+            let mouse = { x: 0, y: 0 }; 
+            let lastSpawnTime = 0;
+            let gameAnimationFrameId = null;
+            let backgroundAnimationFrameId = null;
+            const spawnInterval = 1000;
+            const particleTypes = ['good', 'bad'];
+            const particleIcons = {
+                good: '💎',
+                bad: '💀'
+            };
+            const goodParticleCountForLevelUp = 10;
+
+            // Arka plan animasyonu için değişkenler
+            let backgroundParticles = [];
+            const backgroundParticleCount = 50;
+
+            // Formlar arasında geçiş yapma fonksiyonu
+            const toggleForms = (showForm) => {
+                messageContainer.innerHTML = '';
+                if (showForm === 'login') {
+                    membershipSection.classList.add('hidden');
+                    loginSection.classList.remove('hidden');
+                } else {
+                    membershipSection.classList.remove('hidden');
+                    loginSection.classList.add('hidden');
+                }
+            };
+
+            // Butonlara tıklama olayları ekleme
+            showLoginBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                toggleForms('login');
+            });
+
+            showSignupBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                toggleForms('signup');
+            });
+
+            // Klavyedeki Enter tuşuna basıldığında formu gönderme
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    if (!membershipSection.classList.contains('hidden')) {
+                        membershipForm.dispatchEvent(new Event('submit'));
+                    } else if (!loginSection.classList.contains('hidden')) {
+                        loginForm.dispatchEvent(new Event('submit'));
+                    }
+                }
+            });
+
+            // Üyelik Formu gönderimini yönetme
+            membershipForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                messageContainer.innerHTML = '';
+
+                const name = document.getElementById('name').value.trim();
+                const surname = document.getElementById('surname').value.trim();
+                const idNumber = document.getElementById('idNumber').value.trim();
+                const phone = document.getElementById('phone').value;
+                const cleanedPhone = phone.replace(/\D/g, '');
+
+                let isValid = true;
+                let errorMessage = '';
+
+                if (!name || !surname || !idNumber || !cleanedPhone) {
+                    isValid = false;
+                    errorMessage = 'Lütfen tüm alanları doldurunuz.';
+                } else if (!/^\d{11}$/.test(idNumber)) {
+                    isValid = false;
+                    errorMessage = 'Kimlik numarası 11 rakamdan oluşmalıdır.';
+                } else if (!/^\d{10}$/.test(cleanedPhone)) {
+                    isValid = false;
+                    errorMessage = 'Telefon numarası 10 rakamdan oluşmalıdır.';
+                }
+
+                if (isValid) {
+                    messageContainer.innerHTML = '<span class="text-green-600">Üyeliğiniz başarıyla oluşturuldu! Oyuna yönlendiriliyorsunuz...</span>';
+                    membershipForm.reset();
+                    console.log('Üyelik Formu Verileri:', { name, surname, idNumber, cleanedPhone });
+                    setTimeout(() => {
+                        formSection.classList.add('hidden');
+                        gameStats.classList.remove('hidden');
+                        gameControls.classList.add('hidden');
+                        startGame();
+                    }, 1000);
+                } else {
+                    messageContainer.innerHTML = `<span class="text-red-600">${errorMessage}</span>`;
+                }
+            });
+
+            // Giriş Formu gönderimini yönetme (Basit simülasyon)
+            loginForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                messageContainer.innerHTML = '';
+
+                const email = document.getElementById('login-email').value.trim();
+                const password = document.getElementById('login-password').value.trim();
+
+                // Deneme amaçlı doğru kullanıcı bilgileri
+                const correctEmail = 'user@example.com';
+                const correctPassword = 'password123';
+
+                if (!email || !password) {
+                     messageContainer.innerHTML = '<span class="text-red-600">Lütfen e-posta ve şifrenizi giriniz.</span>';
+                } else if (email === correctEmail && password === correctPassword) {
+                    messageContainer.innerHTML = '<span class="text-green-600">Başarıyla giriş yaptınız! Oyuna yönlendiriliyorsunuz...</span>';
+                    loginForm.reset();
+                    setTimeout(() => {
+                        formSection.classList.add('hidden');
+                        gameStats.classList.remove('hidden');
+                        gameControls.classList.add('hidden');
+                        startGame();
+                    }, 1000);
+                } else {
+                    messageContainer.innerHTML = '<span class="text-red-600">Kullanıcı adı veya şifre yanlış. Lütfen tekrar deneyin.</span>';
+                }
+            });
+
+            // --- Oyun Kodları Başlangıcı ---
+            const canvas = document.getElementById('animation-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Oyuncu nesnesi
+            function Player() {
+                this.x = canvas.width / 2;
+                this.y = canvas.height / 2;
+                this.size = 30;
+                this.speed = 10;
+            }
+
+            Player.prototype.draw = function() {
+                ctx.font = `bold ${this.size}px sans-serif`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('🦸', this.x, this.y);
+            };
+
+            Player.prototype.update = function() {
+                const dx = mouse.x - this.x;
+                const dy = mouse.y - this.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+
+                if (distance > 1) { 
+                    const angle = Math.atan2(dy, dx);
+                    this.x += Math.cos(angle) * this.speed;
+                    this.y += Math.sin(angle) * this.speed;
+                }
+            };
+
+            // Parçacık nesnesi
+            function Particle(type) {
+                this.type = type;
+                this.value = particleIcons[type];
+                this.size = 20;
+
+                const side = Math.floor(Math.random() * 4);
+                if (side === 0) {
+                    this.x = Math.random() * canvas.width;
+                    this.y = -this.size;
+                } else if (side === 1) {
+                    this.x = canvas.width + this.size;
+                    this.y = Math.random() * canvas.height;
+                } else if (side === 2) {
+                    this.x = Math.random() * canvas.width;
+                    this.y = canvas.height + this.size;
+                } else {
+                    this.x = -this.size;
+                    this.y = Math.random() * canvas.height;
+                }
+
+                const targetX = player.x + (Math.random() - 0.5) * 200;
+                const targetY = player.y + (Math.random() - 0.5) * 200;
+                const dx = targetX - this.x;
+                const dy = targetY - this.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                this.vx = (dx / dist) * gameSpeed * (1 + Math.random() * 0.5);
+                this.vy = (dy / dist) * gameSpeed * (1 + Math.random() * 0.5);
+            }
+
+            Particle.prototype.draw = function() {
+                ctx.font = `bold ${this.size}px sans-serif`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(this.value, this.x, this.y);
+            };
+
+            Particle.prototype.update = function() {
+                this.x += this.vx;
+                this.y += this.vy;
+            };
+
+            // Arka plan parçacık nesnesi
+            function BackgroundParticle() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 5 + 2;
+                this.vx = (Math.random() - 0.5) * 0.5;
+                this.vy = (Math.random() - 0.5) * 0.5;
+            }
+
+            BackgroundParticle.prototype.draw = function() {
+                ctx.beginPath();
+                ct
